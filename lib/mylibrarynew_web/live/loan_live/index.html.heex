@@ -1,0 +1,43 @@
+<.header>
+  Listing Loans
+  <:actions>
+    <.link patch={~p"/loans/new"}>
+      <.button>New Loan</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="loans"
+  rows={@streams.loans}
+  row_click={fn {_id, loan} -> JS.navigate(~p"/loans/#{loan}") end}
+>
+  <:col :let={{_id, loan}} label="Borrowed at">{loan.borrowed_at}</:col>
+  <:col :let={{_id, loan}} label="Due at">{loan.due_at}</:col>
+  <:col :let={{_id, loan}} label="Returned at">{loan.returned_at}</:col>
+  <:action :let={{_id, loan}}>
+    <div class="sr-only">
+      <.link navigate={~p"/loans/#{loan}"}>Show</.link>
+    </div>
+    <.link patch={~p"/loans/#{loan}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, loan}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: loan.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="loan-modal" show on_cancel={JS.patch(~p"/loans")}>
+  <.live_component
+    module={MylibrarynewWeb.LoanLive.FormComponent}
+    id={@loan.id || :new}
+    title={@page_title}
+    action={@live_action}
+    loan={@loan}
+    patch={~p"/loans"}
+  />
+</.modal>

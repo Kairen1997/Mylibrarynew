@@ -1,0 +1,28 @@
+<.header>
+  Loan {@loan.id}
+  <:subtitle>This is a loan record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/loans/#{@loan}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit loan</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Borrowed at">{@loan.borrowed_at}</:item>
+  <:item title="Due at">{@loan.due_at}</:item>
+  <:item title="Returned at">{@loan.returned_at}</:item>
+</.list>
+
+<.back navigate={~p"/loans"}>Back to loans</.back>
+
+<.modal :if={@live_action == :edit} id="loan-modal" show on_cancel={JS.patch(~p"/loans/#{@loan}")}>
+  <.live_component
+    module={MylibrarynewWeb.LoanLive.FormComponent}
+    id={@loan.id}
+    title={@page_title}
+    action={@live_action}
+    loan={@loan}
+    patch={~p"/loans/#{@loan}"}
+  />
+</.modal>
