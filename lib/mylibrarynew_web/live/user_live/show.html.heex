@@ -12,10 +12,10 @@
   <:item title="Name">{@user.name}</:item>
   <:item title="Age">{@user.age}</:item>
   <:item title="Book">
-    <%= if Enum.empty?(@user.loan) do %>
+    <%= if Enum.empty?(@user.loans) do %>
       None
     <% else %>
-      <%= @user.loan |> Enum.map(fn loan -> loan.book.title end) |> Enum.join(", ") %>
+      <%= @user.loans |> Enum.map(fn loan -> loan.book.title end) |> Enum.join(", ") %>
     <% end %>
   </:item>
 </.list>

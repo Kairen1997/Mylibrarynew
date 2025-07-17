@@ -6,7 +6,7 @@ defmodule MylibrarynewWeb.UserLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, stream(socket, :users, Accounts.list_user(preload: [loan: :book]))}
+    {:ok, stream(socket, :users, Accounts.list_user(preload: [loans: :book]))}
   end
 
   @impl true

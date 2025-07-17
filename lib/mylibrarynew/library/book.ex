@@ -8,8 +8,9 @@ defmodule Mylibrarynew.Library.Book do
     field :isbn, :string
     field :publised_at, :date
 
-    has_many :loan, Mylibrarynew.Library.Loan
-    has_many :borrowers, through: [:loan, :user]
+    has_many :loans, Mylibrarynew.Library.Loan
+    has_many :borrowers, through: [:loans, :user]
+
     timestamps(type: :utc_datetime)
   end
 
