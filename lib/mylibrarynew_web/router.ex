@@ -1,6 +1,10 @@
 defmodule MylibrarynewWeb.Router do
   use MylibrarynewWeb, :router
 
+  import MylibrarynewWeb.CredentialAuth
+  import MylibrarynewWeb.UserAuth
+
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -8,6 +12,8 @@ defmodule MylibrarynewWeb.Router do
     plug :put_root_layout, html: {MylibrarynewWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug :fetch_current_credential
+    plug :fetch_current_user
   end
 
   pipeline :api do
@@ -43,25 +49,41 @@ defmodule MylibrarynewWeb.Router do
 
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", MylibrarynewWeb do
-  #   pipe_through :api
-  # end
+  ## Authentication routes
 
-  # Enable LiveDashboard and Swoosh mailbox preview in development
-  if Application.compile_env(:mylibrarynew, :dev_routes) do
-    # If you want to use the LiveDashboard in production, you should put
-    # it behind authentication and allow only admins to access it.
-    # If your application does not have an admins-only section yet,
-    # you can use Plug.BasicAuth to set up some basic authentication
-    # as long as you are also using SSL (which you should anyway).
-    import Phoenix.LiveDashboard.Router
+  scope "/", MylibrarynewWeb do
+    pipe_through [:browser, :redirect_if_credential_is_authenticated]
 
-    scope "/dev" do
-      pipe_through :browser
+    live_session :redirect_if_credential_is_authenticated,
+      on_mount: [{MylibrarynewWeb.CredentialAuth, :redirect_if_credential_is_authenticated}] do
+      live "/credentials/register", CredentialRegistrationLive, :new
+      live "/credentials/log_in", CredentialLoginLive, :new
+      live "/credentials/reset_password", CredentialForgotPasswordLive, :new
+      live "/credentials/reset_password/:token", CredentialResetPasswordLive, :edit
+    end
 
-      live_dashboard "/dashboard", metrics: MylibrarynewWeb.Telemetry
-      forward "/mailbox", Plug.Swoosh.MailboxPreview
+    post "/credentials/log_in", CredentialSessionController, :create
+  end
+
+  scope "/", MylibrarynewWeb do
+    pipe_through [:browser, :require_authenticated_credential]
+
+    live_session :require_authenticated_credential,
+      on_mount: [{MylibrarynewWeb.CredentialAuth, :ensure_authenticated}] do
+      live "/credentials/settings", CredentialSettingsLive, :edit
+      live "/credentials/settings/confirm_email/:token", CredentialSettingsLive, :confirm_email
+    end
+  end
+
+  scope "/", MylibrarynewWeb do
+    pipe_through [:browser]
+
+    delete "/credentials/log_out", CredentialSessionController, :delete
+
+    live_session :current_credential,
+      on_mount: [{MylibrarynewWeb.CredentialAuth, :mount_current_credential}] do
+      live "/credentials/confirm/:token", CredentialConfirmationLive, :edit
+      live "/credentials/confirm", CredentialConfirmationInstructionsLive, :new
     end
   end
 end
