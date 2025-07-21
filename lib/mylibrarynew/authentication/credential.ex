@@ -9,6 +9,8 @@ defmodule Mylibrarynew.Authentication.Credential do
     field :current_password, :string, virtual: true, redact: true
     field :confirmed_at, :utc_datetime
 
+    # Add this in the schema block
+    has_one :credential_profile, Mylibrarynew.Authentication.CredentialProfile
     timestamps(type: :utc_datetime)
   end
 

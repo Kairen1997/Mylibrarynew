@@ -18,7 +18,7 @@ defmodule Mylibrarynew.AuthenticationFixtures do
     {:ok, user} =
       attrs
       |> valid_user_attributes()
-      |> Mylibrarynew.Authentication.register_user()
+      |> Mylibrarynew.Authentication.register_credential()
 
     user
   end

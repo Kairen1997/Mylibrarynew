@@ -3,6 +3,10 @@ defmodule Mylibrarynew.Authentication do
   The Authentication context.
   """
 
+  @dialyzer {:nowarn_function, credential_email_multi: 3}
+  @dialyzer {:nowarn_function, update_credential_password: 3}
+  @dialyzer {:nowarn_function, confirm_credential_multi: 1}
+  @dialyzer {:nowarn_function, reset_credential_password: 2}
   import Ecto.Query, warn: false
   alias Mylibrarynew.Repo
 
@@ -349,5 +353,15 @@ defmodule Mylibrarynew.Authentication do
       {:ok, %{credential: credential}} -> {:ok, credential}
       {:error, :credential, changeset, _} -> {:error, changeset}
     end
+  end
+
+  def create_credential_profile(credential, attrs) do
+    %Mylibrarynew.Authentication.CredentialProfile{}
+    |> Mylibrarynew.Authentication.CredentialProfile.changeset(Map.put(attrs, "credential_id", credential.id))
+    |> Repo.insert()
+  end
+
+  def change_credential_profile(profile \\ %Mylibrarynew.Authentication.CredentialProfile{}, attrs \\ %{}) do
+    Mylibrarynew.Authentication.CredentialProfile.changeset(profile, attrs)
   end
 end

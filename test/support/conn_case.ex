@@ -55,7 +55,7 @@ defmodule MylibrarynewWeb.ConnCase do
   It returns an updated `conn`.
   """
   def log_in_user(conn, user) do
-    token = Mylibrarynew.Authentication.generate_user_session_token(user)
+    token = Mylibrarynew.Authentication.generate_credential_session_token(user)
 
     conn
     |> Phoenix.ConnTest.init_test_session(%{})

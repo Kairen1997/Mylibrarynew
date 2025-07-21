@@ -2,8 +2,6 @@ defmodule MylibrarynewWeb.Router do
   use MylibrarynewWeb, :router
 
   import MylibrarynewWeb.CredentialAuth
-  import MylibrarynewWeb.UserAuth
-
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -13,7 +11,6 @@ defmodule MylibrarynewWeb.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug :fetch_current_credential
-    plug :fetch_current_user
   end
 
   pipeline :api do
@@ -21,9 +18,7 @@ defmodule MylibrarynewWeb.Router do
   end
 
   scope "/", MylibrarynewWeb do
-    pipe_through :browser
-
-    get "/", PageController, :home
+    pipe_through [:browser, :require_authenticated_credential]
 
     live "/users", UserLive.Index, :index
     live "/users/new", UserLive.Index, :new
@@ -31,7 +26,12 @@ defmodule MylibrarynewWeb.Router do
 
     live "/users/:id", UserLive.Show, :show
     live "/users/:id/show/edit", UserLive.Show, :edit
+  end
 
+  scope "/", MylibrarynewWeb do
+    pipe_through :browser
+
+    get "/", PageController, :home
 
     live "/books", BookLive.Index, :index
     live "/books/new", BookLive.Index, :new
@@ -46,7 +46,6 @@ defmodule MylibrarynewWeb.Router do
 
     live "/loans/:id", LoanLive.Show, :show
     live "/loans/:id/show/edit", LoanLive.Show, :edit
-
   end
 
   ## Authentication routes
