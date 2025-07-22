@@ -354,14 +354,4 @@ defmodule Mylibrarynew.Authentication do
       {:error, :credential, changeset, _} -> {:error, changeset}
     end
   end
-
-  def create_credential_profile(credential, attrs) do
-    %Mylibrarynew.Authentication.CredentialProfile{}
-    |> Mylibrarynew.Authentication.CredentialProfile.changeset(Map.put(attrs, "credential_id", credential.id))
-    |> Repo.insert()
-  end
-
-  def change_credential_profile(profile \\ %Mylibrarynew.Authentication.CredentialProfile{}, attrs \\ %{}) do
-    Mylibrarynew.Authentication.CredentialProfile.changeset(profile, attrs)
-  end
 end
